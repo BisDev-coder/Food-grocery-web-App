@@ -23,9 +23,25 @@ await connectCloudinary();
 
 
 // Allow multiple origins
-const allowedOrigins = ['http://localhost:5173',process.env.CLIENT_URL]
+// const allowedOrigins = ['http://localhost:5173',process.env.CLIENT_URL]
 
-app.use(cors({origin : allowedOrigins , credentials : true}))
+// app.use(cors({origin : allowedOrigins , credentials : true}))
+const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.CLIENT_URL
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+
 // stripe webhook 
 app.post('/stripe', express.raw({type: "application/json"}),stripeWebhooks )
 // middleware configration
